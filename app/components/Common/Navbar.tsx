@@ -1,8 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useConnect } from "wagmi";
+import { Connect } from "../Connect/connect";
 
 export default function Navbar() {
+  const { connect, connectors, error, isLoading, pendingConnector } =
+    useConnect();
   const [navbar, setNavbar] = useState(false);
 
   //navbar scroll changeBackground function
@@ -26,10 +30,10 @@ export default function Navbar() {
           className={
             navbar
               ? "mx-6 md:mx-12 mt-4  text-white rounded-full nav-scroll-active shadow-2xl"
-              : "mx-6 md:mx-12 mt-4  text-white rounded-full bg-black"
+              : "mx-6 md:mx-12 mt-4  text-white rounded-full bg-black/80"
           }
         >
-          <div className="flex flex-row items-center justify-between px-8 py-5">
+          <div className="flex flex-row items-center justify-between px-8 py-4">
             <a href="#home">
               <Image
                 src="/neopay-logo.png"
@@ -38,12 +42,9 @@ export default function Navbar() {
                 width="150"
               />
             </a>
-            <ul className="flex-row items-center justify-center hidden space-x-12 text-lg text-primary uppercase md:flex">
+            <ul className="flex-row items-center justify-center hidden space-x-12 text-lg uppercase md:flex">
               <li>
-                <a href="#about">About</a>
-              </li>
-              <li>
-                <a href="#projects">Projects</a>
+                <Connect />
               </li>
             </ul>
           </div>
