@@ -9,8 +9,6 @@ import toast from "react-hot-toast";
 import { Web3 } from "web3";
 import Truncate from "../Common/utils/truncate";
 import StackOSABI from "../Common/utils/abi/STACKOS.json";
-import NEOABI from "../Common/utils/abi/NEO.json";
-import OKXABI from "../Common/utils/abi/OKX.json";
 import POOLABI from "../Common/utils/abi/POOL.json";
 
 export default function Card() {
@@ -75,7 +73,7 @@ export default function Card() {
     console.log(TokenName);
   }
   return (
-    <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-md shadow-md w-full text-white px-12 py-6">
+    <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-12 py-8">
       <Tab.Group>
         <Tab.List className="grid grid-cols-2 w-full">
           <Tab as={Fragment}>
@@ -283,7 +281,10 @@ export default function Card() {
                     Generate QR
                   </button>
                 ) : (
-                  <button className="w-full bg-primary rounded-md shadow-sm px-8 py-2 text-white text-lg uppercase">
+                  <button
+                    className="w-full bg-primary/20 rounded-md shadow-sm px-8 py-2 text-white text-lg uppercase cursor-not-allowed"
+                    disabled={true}
+                  >
                     Connect wallet
                   </button>
                 )}
