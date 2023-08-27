@@ -10,6 +10,14 @@ import { Web3 } from "web3";
 import Truncate from "../Common/utils/truncate";
 import StackOSABI from "../Common/utils/abi/STACKOS.json";
 import POOLABI from "../Common/utils/abi/POOL.json";
+import Link from "next/link";
+
+interface Data {
+  amount: number;
+  chainId: number;
+  tokenAddress: string;
+  userAddress: string;
+}
 
 export default function Card() {
   //   const web3 = new Web3("https://evm.ngd.network:32332");
@@ -21,12 +29,8 @@ export default function Card() {
 
   const account = useAccount();
   const { isConnected } = useAccount();
-  const [data, setData] = useState<{
-    amount: number;
-    chainId: number;
-    tokenAddress: string;
-    userAddress: string;
-  }>();
+  const [data, setData] = useState<Data>();
+  const [scanned, setScanned] = useState(false);
   const [qrdata, setQRData] = useState<{
     amount: number;
     chainId: number;
@@ -143,12 +147,13 @@ export default function Card() {
         </Tab.List>
         <Tab.Panels className={"w-full"}>
           <Tab.Panel className={"w-full"}>
-            {!data ? (
+            {!scanned ? (
               <QrReader
                 onResult={(result: any, error) => {
                   if (!!result) {
                     const txData = JSON.parse(result?.getText());
                     setData(txData);
+                    setScanned(true);
                     toast.success("QR Scanned successfully");
                   }
 
@@ -183,7 +188,10 @@ export default function Card() {
                       />
                     </svg>
                     Amount:
-                    <span>{web3.utils.fromWei(data?.amount, "ether")}</span>
+                    <span>
+                      {web3.utils.fromWei(data?.amount || 0, "ether")}{" "}
+                      {getTokenDetails(data?.tokenAddress || "")?.ticker}
+                    </span>
                   </h3>
                   <h3 className="flex flex-row gap-2 font-bold">
                     <svg
@@ -201,8 +209,18 @@ export default function Card() {
                       />
                     </svg>
                     Address:{" "}
-                    <span>{Truncate(data?.userAddress, 16, "...")}</span>
+                    <Link
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                      href={
+                        "https://evm.ngd.network/address/" + data?.userAddress
+                      }
+                    >
+                      {Truncate(data?.userAddress, 16, "...")}
+                    </Link>
                   </h3>
+
                   <div className="flex flex-col gap-2">
                     <label className="w-full text-sm" htmlFor="chains">
                       Select a Token to Pay
@@ -237,6 +255,7 @@ export default function Card() {
                     <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
                   </svg>
                 </button>
+                <button onClick={() => setScanned(false)}>Cancel</button>
               </div>
             )}
           </Tab.Panel>

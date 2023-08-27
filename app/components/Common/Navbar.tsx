@@ -51,7 +51,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row justify-between items-center">
+      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row justify-between items-center md:hidden">
         <Link href="/">
           <Image
             src="/neopay-logo.png"

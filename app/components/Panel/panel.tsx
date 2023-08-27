@@ -24,12 +24,7 @@ export default function Panel(props: any) {
           />
         </div>
         <div>
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolorem
-            soluta ducimus eum tenetur, sequi commodi, voluptatum exercitationem
-            quisquam iusto dolore deleniti fugiat delectus saepe deserunt
-            maiores, facilis veritatis blanditiis officiis.
-          </p>
+          <p>{props.content}</p>
         </div>
         <div className="flex justify-start">
           <div

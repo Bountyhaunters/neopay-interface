@@ -45,12 +45,14 @@ export default function Home() {
           image="/icons/Send.svg"
           buttonText="Send Payment"
           buttonIcon="/icons/button-send.svg"
+          content="NeoPay is an open-source & hassle-free payment solution built on the Neo blockchain, that is straightforward to use. This payment and customizable option can be smoothly incorporated into any Dapps within the Neo Ecosystem by deploying the NeoPay Docker image."
         />
 
         <Panel
           image="/icons/QR.svg"
           buttonText="Recieve Payment"
           buttonIcon="/icons/button-qr.svg"
+          content="NeoPay is an open-source & hassle-free payment solution built on the Neo blockchain, that is straightforward to use. This payment and customizable option can be smoothly incorporated into any Dapps within the Neo Ecosystem by deploying the NeoPay Docker image."
         />
       </section>
     </>

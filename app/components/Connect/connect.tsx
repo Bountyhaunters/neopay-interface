@@ -41,7 +41,7 @@ export function Connect() {
   return (
     <>
       {isConnected ? (
-        <div className="px-8 py-2 rounded-full shadow-sm bg-white/20">
+        <div className="px-4 md:px-8 py-2 rounded-full shadow-sm bg-white/20">
           <div className="flex flex-row items-center justify-center gap-2 w-44">
             <Image
               src={"/neo-icon.png"}
