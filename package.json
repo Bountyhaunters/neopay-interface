@@ -17,6 +17,7 @@
     "encoding": "^0.1.13",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "lokijs": "^1.5.12",
     "next": "13.4.19",
     "pino-pretty": "^10.2.0",
     "postcss": "8.4.28",
