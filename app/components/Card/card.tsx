@@ -4,7 +4,12 @@ import { Tab } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import QRCode from "react-qr-code";
-import { Tokens, getPoolDetails, getTokenDetails } from "../Common/utils/data";
+import {
+  _Tokens,
+  Tokens,
+  getPoolDetails,
+  getTokenDetails,
+} from "../Common/utils/data";
 import { erc20ABI, useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import Truncate from "../Common/utils/truncate";
@@ -254,7 +259,7 @@ export default function Card() {
                       id="tokens"
                       onChange={(e) => setSenderToken(e.target.value)}
                     >
-                      {Tokens.reverse().map((token, i) => {
+                      {_Tokens.map((token, i) => {
                         return (
                           <option key={i} value={token.address}>
                             {token.ticker}

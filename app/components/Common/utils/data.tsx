@@ -35,6 +35,7 @@ const Pools = [
 ];
 
 const Tokens = [token_okx, token_stack, token_neo];
+const _Tokens = Tokens.reverse();
 
 function getTokenDetails(address: string) {
   for (var i = 0; i < Tokens.length; i++) {
@@ -57,4 +58,4 @@ function getPoolDetails(tokenA: string, tokenB: string) {
   return null;
 }
 
-export { Tokens, Pools, getTokenDetails, getPoolDetails };
+export { Tokens, _Tokens, Pools, getTokenDetails, getPoolDetails };
