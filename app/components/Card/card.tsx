@@ -1,16 +1,18 @@
 "use client";
 
 import { Tab } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import QRCode from "react-qr-code";
-import { Tokens, getTokenDetails } from "../Common/utils/data";
-import { useAccount } from "wagmi";
+import { Tokens, getPoolDetails, getTokenDetails } from "../Common/utils/data";
+import { erc20ABI, useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import Truncate from "../Common/utils/truncate";
+import Link from "next/link";
 import StackOSABI from "../Common/utils/abi/STACKOS.json";
 import POOLABI from "../Common/utils/abi/POOL.json";
-import Link from "next/link";
+import { Web3 } from "web3";
+import { useContractWrite } from "wagmi";
 
 interface Data {
   amount: number;
@@ -20,6 +22,7 @@ interface Data {
 }
 
 export default function Card() {
+  const web3 = new Web3();
   const { address, isConnected } = useAccount();
 
   const [data, setData] = useState<Data>();
@@ -33,6 +36,22 @@ export default function Card() {
     "0xEB0dbA59d17d2016B08B9C9E23D51BbBE7289519"
   );
   const [showqr, setShowqr] = useState<boolean>(false);
+
+  // const {
+  //   data: approveData,
+  //   isLoading: approveLoading,
+  //   isSuccess: approveSuccess,
+  //   write: appoveWrite,
+  // } = useContractWrite({
+  //   address: data?.tokenAddress! as `0x${string}`,
+  //   abi: erc20ABI,
+  //   functionName: "approve",
+  //   args: [
+  //     getPoolDetails(data?.tokenAddress!, sendertoken)?.Pool! as `0x${string}`,
+  //     BigInt(data?.amount!),
+  //   ],
+
+  // });
 
   const generateQR = () => {
     if (!amount || amount <= 0) {
@@ -53,6 +72,7 @@ export default function Card() {
   };
 
   async function Transfer() {
+    appoveWrite();
   }
   return (
     <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-12 py-8">
@@ -167,7 +187,7 @@ export default function Card() {
                     </svg>
                     Amount:
                     <span>
-                      {data?.amount || 0}{" "}
+                      {web3.utils.fromWei(data?.amount || 0, "ether")}{" "}
                       {getTokenDetails(data?.tokenAddress || "")?.ticker}
                     </span>
                   </h3>
@@ -219,20 +239,32 @@ export default function Card() {
                     </select>
                   </div>
                 </div>
-                <button
-                  className="bg-primary px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2"
-                  onClick={() => Transfer()}
-                >
-                  Transfer
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-4 h-4"
+                {isConnected ? (
+                  <button
+                    className="bg-primary px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2"
+                    onClick={() => Transfer()}
                   >
-                    <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                  </svg>
-                </button>
+                    Transfer
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                    </svg>
+                  </button>
+                ) : (
+                  <>
+                    {" "}
+                    <button
+                      className="bg-black/20 px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2 cursor-not-allowed"
+                      disabled={true}
+                    >
+                      Connect Wallet
+                    </button>
+                  </>
+                )}
                 <button onClick={() => setScanned(false)}>Cancel</button>
               </div>
             )}
