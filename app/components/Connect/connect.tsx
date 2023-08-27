@@ -1,5 +1,6 @@
 "use client";
-import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
+
+import { useAccount, useConnect, useDisconnect, useEnsName, useNetwork } from "wagmi";
 import Image from "next/image";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import Truncate from "../Common/utils/truncate";
 import { usePathname } from "next/navigation";
+
 export function Connect() {
   const pathname = usePathname();
   let [isOpen, setIsOpen] = useState(false);

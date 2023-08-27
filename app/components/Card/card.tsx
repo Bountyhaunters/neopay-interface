@@ -1,12 +1,12 @@
 "use client";
+
 import { Tab } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import QRCode from "react-qr-code";
-import { Tokens, getPoolDetails, getTokenDetails } from "../Common/utils/data";
+import { Tokens, getTokenDetails } from "../Common/utils/data";
 import { useAccount } from "wagmi";
 import toast from "react-hot-toast";
-import { Web3 } from "web3";
 import Truncate from "../Common/utils/truncate";
 import StackOSABI from "../Common/utils/abi/STACKOS.json";
 import POOLABI from "../Common/utils/abi/POOL.json";
@@ -20,23 +20,11 @@ interface Data {
 }
 
 export default function Card() {
-  //   const web3 = new Web3("https://evm.ngd.network:32332");
-  const web3 = new Web3(
-    new Web3.providers.HttpProvider("https://evm.ngd.network:32332")
-  );
-  const Token = new web3.eth.Contract(StackOSABI.abi);
-  const POOL = new web3.eth.Contract(POOLABI.abi);
+  const { address, isConnected } = useAccount();
 
-  const account = useAccount();
-  const { isConnected } = useAccount();
   const [data, setData] = useState<Data>();
   const [scanned, setScanned] = useState(false);
-  const [qrdata, setQRData] = useState<{
-    amount: number;
-    chainId: number;
-    tokenAddress: string;
-    userAddress: string;
-  }>();
+  const [qrdata, setQRData] = useState<Data>();
   const [amount, setAmount] = useState<number>();
   const [token, setToken] = useState<string>(
     "0x4e228A23dC6B3167757C73C585311A59833DEb7c"
@@ -51,7 +39,7 @@ export default function Card() {
       toast.error("Please enter the amount");
       return;
     }
-    if (!account.address) {
+    if (!address) {
       toast.error("Connect your wallet");
       return;
     }
@@ -59,22 +47,12 @@ export default function Card() {
       amount: amount * 10 ** 18,
       chainId: 2970385,
       tokenAddress: token || "",
-      userAddress: account.address,
+      userAddress: address,
     });
     setShowqr(true);
   };
 
   async function Transfer() {
-    // console.log(sendertoken);
-    // console.log(getPoolDetails(sendertoken, data?.tokenAddress || ""));
-    console.log(await web3.eth.getBlockNumber());
-    console.log(getTokenDetails(sendertoken));
-    const senderTokenContract = new web3.eth.Contract(
-      StackOSABI.abi,
-      sendertoken
-    );
-    const TokenName = await senderTokenContract.methods.name().call();
-    console.log(TokenName);
   }
   return (
     <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-12 py-8">
@@ -189,7 +167,7 @@ export default function Card() {
                     </svg>
                     Amount:
                     <span>
-                      {web3.utils.fromWei(data?.amount || 0, "ether")}{" "}
+                      {data?.amount || 0}{" "}
                       {getTokenDetails(data?.tokenAddress || "")?.ticker}
                     </span>
                   </h3>

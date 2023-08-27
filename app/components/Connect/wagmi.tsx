@@ -1,19 +1,42 @@
 "use client";
-import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
 
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
-
+import { WagmiConfig, createConfig, configureChains, Chain, mainnet } from "wagmi";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+
+const neo = {
+  id: 2970385,
+  name: 'Neo',
+  network: 'neo',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'GAS',
+    symbol: 'GAS',
+  },
+  rpcUrls: {
+    public: { http: ['https://evm.ngd.network:32332'] },
+    default: { http: ['https://evm.ngd.network:32332'] },
+  },
+  blockExplorers: {
+    etherscan: { name: 'NeoExplorer', url: 'https://evm.ngd.network/' },
+    default: { name: 'NeoExplorer', url: 'https://evm.ngd.network/' },
+  },
+} as const satisfies Chain
 
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet],
-  [publicProvider()]
+const { chains:[,...chains], publicClient, webSocketPublicClient } = configureChains(
+  [mainnet, neo],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: chain.rpcUrls.default.http[0],
+        webSocket: chain.rpcUrls.default.webSocket?.[0],
+      }),
+  }),
+  ]
 );
 
 // Set up wagmi config
@@ -34,13 +57,14 @@ const config = createConfig({
     new CoinbaseWalletConnector({
       chains,
       options: {
-        appName: "wagmi",
+        appName: process.env.NEXT_PUBLIC_BRAND_NAME || '',
       },
     }),
   ],
   publicClient,
   webSocketPublicClient,
 });
+
 export default function Wagmi({ children }: { children: React.ReactNode }) {
   return <WagmiConfig config={config}>{children}</WagmiConfig>;
 }

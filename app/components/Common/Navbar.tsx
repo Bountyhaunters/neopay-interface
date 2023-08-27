@@ -6,8 +6,6 @@ import { Connect } from "../Connect/connect";
 import Link from "next/link";
 
 export default function Navbar() {
-  const { connect, connectors, error, isLoading, pendingConnector } =
-    useConnect();
   const [navbar, setNavbar] = useState(false);
 
   //navbar scroll changeBackground function
