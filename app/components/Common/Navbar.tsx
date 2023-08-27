@@ -10,6 +10,8 @@ export default function Navbar() {
     useConnect();
   const [navbar, setNavbar] = useState(false);
 
+  const logo = process.env.NEXT_PUBLIC_BRAND_LOGO || "/neopay-logo.png"
+
   //navbar scroll changeBackground function
   const changeBackground = () => {
     if (window.scrollY >= 66) {
@@ -37,8 +39,8 @@ export default function Navbar() {
           <div className="flex flex-row items-center justify-between px-8 py-4">
             <Link href="/">
               <Image
-                src="/neopay-logo.png"
-                alt="Neopay Logo"
+                src={logo}
+                alt="logo"
                 height="150"
                 width="150"
               />
@@ -51,11 +53,11 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row justify-between items-center">
+      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row justify-between items-center md:hidden">
         <Link href="/">
           <Image
-            src="/neopay-logo.png"
-            alt="Neopay Logo"
+            src={logo}
+            alt="logo"
             height="120"
             width="120"
           />

@@ -9,7 +9,7 @@ export default function Home() {
         <div className="flex flex-col-reverse md:grid grid-cols-2 gap-12">
           <div className="flex flex-col justify-center items-start gap-6">
             <h1 className="text-5xl md:text-7xl text-black font-bold leading-none uppercase">
-              NEOPAY
+              {process.env.NEXT_PUBLIC_BRAND_NAME}
               <br /> Payments made easy on NEO EVM
             </h1>
             <div className="flex flex-row justify-center items-center gap-4">
