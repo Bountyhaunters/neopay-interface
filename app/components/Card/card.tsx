@@ -11,7 +11,6 @@ import Truncate from "../Common/utils/truncate";
 import Link from "next/link";
 import StackOSABI from "../Common/utils/abi/STACKOS.json";
 import POOLABI from "../Common/utils/abi/POOL.json";
-import { Web3 } from "web3";
 import { useContractWrite } from "wagmi";
 
 interface Data {
@@ -22,7 +21,6 @@ interface Data {
 }
 
 export default function Card() {
-  const web3 = new Web3();
   const { address, isConnected } = useAccount();
 
   const [data, setData] = useState<Data>();
@@ -37,21 +35,27 @@ export default function Card() {
   );
   const [showqr, setShowqr] = useState<boolean>(false);
 
-  // const {
-  //   data: approveData,
-  //   isLoading: approveLoading,
-  //   isSuccess: approveSuccess,
-  //   write: appoveWrite,
-  // } = useContractWrite({
-  //   address: data?.tokenAddress! as `0x${string}`,
-  //   abi: erc20ABI,
-  //   functionName: "approve",
-  //   args: [
-  //     getPoolDetails(data?.tokenAddress!, sendertoken)?.Pool! as `0x${string}`,
-  //     BigInt(data?.amount!),
-  //   ],
+  const {
+    data: approveData,
+    isLoading: approveLoading,
+    isSuccess: approveSuccess,
+    write: appoveWrite,
+  } = useContractWrite({
+    address: data?.tokenAddress! as `0x${string}`,
+    abi: erc20ABI,
+    functionName: "approve",
+  });
 
-  // });
+  const {
+    data: swapData,
+    isLoading: swapLoading,
+    isSuccess: swapSuccess,
+    write: swapWrite,
+  } = useContractWrite({
+    address: getPoolDetails(data?.tokenAddress!, qrdata?.tokenAddress!)?.Pool! as `0x${string}`,
+    abi: POOLABI.abi,
+    functionName: "swap",
+  });
 
   const generateQR = () => {
     if (!amount || amount <= 0) {
@@ -72,7 +76,19 @@ export default function Card() {
   };
 
   async function Transfer() {
-    appoveWrite();
+    appoveWrite({
+    args: [
+      getPoolDetails(data?.tokenAddress!, qrdata?.tokenAddress!)?.Pool! as `0x${string}`,
+      BigInt(data?.amount!),
+    ],
+    });
+    swapWrite({
+      args: [
+        data?.tokenAddress!,
+        qrdata?.userAddress!,
+        BigInt(data?.amount!),
+      ]
+    })
   }
   return (
     <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-12 py-8">
@@ -187,7 +203,7 @@ export default function Card() {
                     </svg>
                     Amount:
                     <span>
-                      {web3.utils.fromWei(data?.amount || 0, "ether")}{" "}
+                      {data?.amount || 0}{" "}
                       {getTokenDetails(data?.tokenAddress || "")?.ticker}
                     </span>
                   </h3>
