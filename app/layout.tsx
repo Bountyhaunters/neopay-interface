@@ -12,9 +12,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Neopay - Simply Scan and Pay",
+  title: `${process.env.NEXT_PUBLIC_BRAND_NAME} - Simply Scan and Pay`,
   description:
-    "Neopay - Scan and pay with ease send in any token and recieve in your choice of token",
+    `${process.env.NEXT_PUBLIC_BRAND_NAME} - Scan and pay with ease send in any token and recieve in your choice of token`,
 };
 
 export default function RootLayout({
