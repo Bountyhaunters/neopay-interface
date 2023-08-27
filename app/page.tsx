@@ -52,7 +52,7 @@ export default function Home() {
           image="/icons/QR.svg"
           buttonText="Recieve Payment"
           buttonIcon="/icons/button-qr.svg"
-          content="NeoPay is an open-source & hassle-free payment solution built on the Neo blockchain, that is straightforward to use. This payment and customizable option can be smoothly incorporated into any Dapps within the Neo Ecosystem by deploying the NeoPay Docker image."
+          content="Streamline customer payments with NeoPay's scan-and-pay feature. Effortlessly enable customers to make transactions by scanning the QR code, enhancing convenience and user experience which makes it easy and straightforward to use."
         />
       </section>
     </>
