@@ -1,38 +1,37 @@
 "use client";
+
 import { Tab } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import QRCode from "react-qr-code";
-import { Tokens, getPoolDetails, getTokenDetails } from "../Common/utils/data";
-import { useAccount } from "wagmi";
+import {
+  _Tokens,
+  Tokens,
+  getPoolDetails,
+  getTokenDetails,
+} from "../Common/utils/data";
+import { erc20ABI, useAccount } from "wagmi";
 import toast from "react-hot-toast";
-import { Web3 } from "web3";
 import Truncate from "../Common/utils/truncate";
+import Link from "next/link";
 import StackOSABI from "../Common/utils/abi/STACKOS.json";
 import POOLABI from "../Common/utils/abi/POOL.json";
+import { useContractWrite } from "wagmi";
+import { Web3 } from "web3";
+interface Data {
+  amount: number;
+  chainId: number;
+  tokenAddress: string;
+  userAddress: string;
+}
 
 export default function Card() {
-  //   const web3 = new Web3("https://evm.ngd.network:32332");
-  const web3 = new Web3(
-    new Web3.providers.HttpProvider("https://evm.ngd.network:32332")
-  );
-  const Token = new web3.eth.Contract(StackOSABI.abi);
-  const POOL = new web3.eth.Contract(POOLABI.abi);
+  const web3 = new Web3();
+  const { address, isConnected } = useAccount();
 
-  const account = useAccount();
-  const { isConnected } = useAccount();
-  const [data, setData] = useState<{
-    amount: number;
-    chainId: number;
-    tokenAddress: string;
-    userAddress: string;
-  }>();
-  const [qrdata, setQRData] = useState<{
-    amount: number;
-    chainId: number;
-    tokenAddress: string;
-    userAddress: string;
-  }>();
+  const [data, setData] = useState<Data>();
+  const [scanned, setScanned] = useState(false);
+  const [qrdata, setQRData] = useState<Data>();
   const [amount, setAmount] = useState<number>();
   const [token, setToken] = useState<string>(
     "0x4e228A23dC6B3167757C73C585311A59833DEb7c"
@@ -42,12 +41,35 @@ export default function Card() {
   );
   const [showqr, setShowqr] = useState<boolean>(false);
 
+  const {
+    data: approveData,
+    isLoading: approveLoading,
+    isSuccess: approveSuccess,
+    write: appoveWrite,
+  } = useContractWrite({
+    address: sendertoken as `0x${string}`,
+    abi: erc20ABI,
+    functionName: "approve",
+  });
+
+  const {
+    data: swapData,
+    isLoading: swapLoading,
+    isSuccess: swapSuccess,
+    write: swapWrite,
+  } = useContractWrite({
+    address: getPoolDetails(data?.tokenAddress!, sendertoken)
+      ?.Pool! as `0x${string}`,
+    abi: POOLABI.abi,
+    functionName: "swap",
+  });
+
   const generateQR = () => {
     if (!amount || amount <= 0) {
       toast.error("Please enter the amount");
       return;
     }
-    if (!account.address) {
+    if (!address) {
       toast.error("Connect your wallet");
       return;
     }
@@ -55,22 +77,32 @@ export default function Card() {
       amount: amount * 10 ** 18,
       chainId: 2970385,
       tokenAddress: token || "",
-      userAddress: account.address,
+      userAddress: address,
     });
     setShowqr(true);
   };
 
-  async function Transfer() {
-    // console.log(sendertoken);
-    // console.log(getPoolDetails(sendertoken, data?.tokenAddress || ""));
-    console.log(await web3.eth.getBlockNumber());
-    console.log(getTokenDetails(sendertoken));
-    const senderTokenContract = new web3.eth.Contract(
-      StackOSABI.abi,
-      sendertoken
-    );
-    const TokenName = await senderTokenContract.methods.name().call();
-    console.log(TokenName);
+  useEffect(() => {
+    if (approveSuccess) {
+      console.log("tokenIn", sendertoken);
+      console.log("reciver", data?.userAddress);
+      console.log("amount", data?.amount);
+      swapWrite({
+        args: [sendertoken, data?.userAddress!, BigInt(data?.amount!)],
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [approveSuccess]);
+
+  function Transfer() {
+    appoveWrite({
+      args: [
+        getPoolDetails(data?.tokenAddress!, sendertoken)
+          ?.Pool! as `0x${string}`,
+        BigInt(data?.amount!),
+      ],
+    });
   }
   return (
     <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-12 py-8">
@@ -143,12 +175,13 @@ export default function Card() {
         </Tab.List>
         <Tab.Panels className={"w-full"}>
           <Tab.Panel className={"w-full"}>
-            {!data ? (
+            {!scanned ? (
               <QrReader
                 onResult={(result: any, error) => {
                   if (!!result) {
                     const txData = JSON.parse(result?.getText());
                     setData(txData);
+                    setScanned(true);
                     toast.success("QR Scanned successfully");
                   }
 
@@ -183,7 +216,10 @@ export default function Card() {
                       />
                     </svg>
                     Amount:
-                    <span>{web3.utils.fromWei(data?.amount, "ether")}</span>
+                    <span>
+                      {web3.utils.fromWei(data?.amount || 0, "ether")}{" "}
+                      {getTokenDetails(data?.tokenAddress || "")?.ticker}
+                    </span>
                   </h3>
                   <h3 className="flex flex-row gap-2 font-bold">
                     <svg
@@ -201,8 +237,18 @@ export default function Card() {
                       />
                     </svg>
                     Address:{" "}
-                    <span>{Truncate(data?.userAddress, 16, "...")}</span>
+                    <Link
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                      href={
+                        "https://evm.ngd.network/address/" + data?.userAddress
+                      }
+                    >
+                      {Truncate(data?.userAddress, 16, "...")}
+                    </Link>
                   </h3>
+
                   <div className="flex flex-col gap-2">
                     <label className="w-full text-sm" htmlFor="chains">
                       Select a Token to Pay
@@ -213,7 +259,7 @@ export default function Card() {
                       id="tokens"
                       onChange={(e) => setSenderToken(e.target.value)}
                     >
-                      {Tokens.reverse().map((token, i) => {
+                      {_Tokens.map((token, i) => {
                         return (
                           <option key={i} value={token.address}>
                             {token.ticker}
@@ -223,20 +269,33 @@ export default function Card() {
                     </select>
                   </div>
                 </div>
-                <button
-                  className="bg-primary px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2"
-                  onClick={() => Transfer()}
-                >
-                  Transfer
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-4 h-4"
+                {isConnected ? (
+                  <button
+                    className="bg-primary px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2"
+                    onClick={() => Transfer()}
                   >
-                    <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                  </svg>
-                </button>
+                    Transfer
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                    </svg>
+                  </button>
+                ) : (
+                  <>
+                    {" "}
+                    <button
+                      className="bg-black/20 px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2 cursor-not-allowed"
+                      disabled={true}
+                    >
+                      Connect Wallet
+                    </button>
+                  </>
+                )}
+                <button onClick={() => setScanned(false)}>Cancel</button>
               </div>
             )}
           </Tab.Panel>

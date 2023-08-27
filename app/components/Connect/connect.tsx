@@ -1,5 +1,6 @@
 "use client";
-import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
+
+import { useAccount, useConnect, useDisconnect, useEnsName, useNetwork } from "wagmi";
 import Image from "next/image";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import Truncate from "../Common/utils/truncate";
 import { usePathname } from "next/navigation";
+
 export function Connect() {
   const pathname = usePathname();
   let [isOpen, setIsOpen] = useState(false);
@@ -41,7 +43,7 @@ export function Connect() {
   return (
     <>
       {isConnected ? (
-        <div className="px-8 py-2 rounded-full shadow-sm bg-white/20">
+        <div className="px-4 md:px-8 py-2 rounded-full shadow-sm bg-white/20">
           <div className="flex flex-row items-center justify-center gap-2 w-44">
             <Image
               src={"/neo-icon.png"}
