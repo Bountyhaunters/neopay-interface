@@ -11,10 +11,39 @@ const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: `${process.env.NEXT_PUBLIC_BRAND_NAME} - Simply Scan and Pay`,
-  description:
-    `${process.env.NEXT_PUBLIC_BRAND_NAME} - Scan and pay with ease send in any token and recieve in your choice of token`,
+  description: `${process.env.NEXT_PUBLIC_BRAND_NAME} - Scan and pay with ease send in any token and recieve in your choice of token`,
+  openGraph: {
+    title: "NeoPay - Simply Scan and Pay",
+    url: "https://neopay-interface.vercel.app/",
+    description: `${process.env.NEXT_PUBLIC_BRAND_NAME} - Scan and pay with ease send in any token and recieve in your choice of token`,
+    images: [
+      {
+        url: "https://neopay-interface.vercel.app/og/neopay-og.png",
+        secureUrl: "https://neopay-interface.vercel.app/og/neopay-og.png",
+        alt: "NeoPay - Simply Scan and Pay",
+        width: 1200,
+        height: 630,
+        type: "image/png",
+      },
+    ],
+    locale: "en-US",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://neopay-interface.vercel.app/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NeoPay - Simply Scan and Pay",
+    description: `${process.env.NEXT_PUBLIC_BRAND_NAME} - Scan and pay with ease send in any token and recieve in your choice of token`,
+    creator: "@NeoPay",
+    images: ["https://neopay-interface.vercel.app/og/neopay-og.png"],
+  },
+  robots: {
+    index: true,
+  },
 };
 
 export default function RootLayout({
