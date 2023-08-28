@@ -46,7 +46,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row justify-between items-center md:hidden">
+      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row gap-2 justify-between items-center md:hidden">
         <Link href="/">
           <img src={logo} alt="logo" height="120" width="120" />
         </Link>

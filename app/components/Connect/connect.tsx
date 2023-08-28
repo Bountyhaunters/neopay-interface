@@ -1,6 +1,12 @@
 "use client";
 
-import { useAccount, useConnect, useDisconnect, useEnsName, useNetwork } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useEnsName,
+  useNetwork,
+} from "wagmi";
 import Image from "next/image";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
@@ -44,7 +50,7 @@ export function Connect() {
     <>
       {isConnected ? (
         <div className="px-4 md:px-8 py-2 rounded-full shadow-sm bg-white/20">
-          <div className="flex flex-row items-center justify-center gap-2 w-44">
+          <div className="flex flex-row items-center justify-center gap-2 w-32 md:w-44">
             <Image
               src={"/neo-icon.png"}
               alt="ENS Avatar"
