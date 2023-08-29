@@ -31,8 +31,7 @@ interface Data {
 export default function Card() {
   const web3 = new Web3();
   const { address, isConnected } = useAccount();
-
-  const [data, setData] = useState<Data>();
+  const [QRReader, setQRReader] = useState<Data>();
   const [scannerShow, setScannerShow] = useState(false);
 
   const [scanned, setScanned] = useState(false);
@@ -44,6 +43,7 @@ export default function Card() {
   const [sendertoken, setSenderToken] = useState<string>(
     "0xEB0dbA59d17d2016B08B9C9E23D51BbBE7289519"
   );
+
   const [showqr, setShowqr] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
   const {
@@ -63,7 +63,7 @@ export default function Card() {
     isSuccess: swapSuccess,
     write: swapWrite,
   } = useContractWrite({
-    address: getPoolDetails(data?.tokenAddress!, sendertoken)
+    address: getPoolDetails(QRReader?.tokenAddress!, sendertoken)
       ?.Pool! as `0x${string}`,
     abi: POOLABI.abi,
     functionName: "swap",
@@ -78,6 +78,12 @@ export default function Card() {
       toast.error("Connect your wallet");
       return;
     }
+    console.log({
+      amount: amount * 10 ** 18,
+      chainId: 2970385,
+      tokenAddress: token || "",
+      userAddress: address,
+    });
     setQRData({
       amount: amount * 10 ** 18,
       chainId: 2970385,
@@ -89,23 +95,31 @@ export default function Card() {
 
   useEffect(() => {
     if (approveSuccess) {
+      toast.success("Approved Successfull");
       console.log("tokenIn", sendertoken);
-      console.log("reciver", data?.userAddress);
-      console.log("amount", data?.amount);
+      console.log("reciver", QRReader?.userAddress);
+      console.log("amount", QRReader?.amount);
       swapWrite({
-        args: [sendertoken, data?.userAddress!, BigInt(data?.amount!)],
+        args: [sendertoken, QRReader?.userAddress!, BigInt(QRReader?.amount!)],
       });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [approveSuccess]);
 
+  useEffect(() => {
+    if (swapSuccess) {
+      toast.success("Transferred Successfull");
+      setScanned(false);
+    }
+  }, [swapSuccess]);
+
   function Transfer() {
     appoveWrite({
       args: [
-        getPoolDetails(data?.tokenAddress!, sendertoken)
+        getPoolDetails(QRReader?.tokenAddress!, sendertoken)
           ?.Pool! as `0x${string}`,
-        BigInt(data?.amount!),
+        BigInt(QRReader?.amount!),
       ],
     });
   }
@@ -126,9 +140,9 @@ export default function Card() {
       });
   }, [ref]);
   return (
-    <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-8 md:px-12 py-8">
+    <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-8 md:px-12 py-6">
       <Tab.Group>
-        <Tab.List className="grid grid-cols-2 w-full">
+        <Tab.List className="grid grid-cols-2 w-full bg-black/50 rounded-lg p-1">
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
@@ -204,7 +218,7 @@ export default function Card() {
                       onResult={(result: any, error) => {
                         if (!!result) {
                           const txData = JSON.parse(result?.getText());
-                          setData(txData);
+                          setQRReader(txData);
                           setScanned(true);
                           toast.success("QR Scanned successfully");
                         }
@@ -268,8 +282,11 @@ export default function Card() {
                         </svg>
                         Amount:
                         <span>
-                          {web3.utils.fromWei(data?.amount || 0, "ether")}{" "}
-                          {getTokenDetails(data?.tokenAddress || "")?.ticker}
+                          {web3.utils.fromWei(QRReader?.amount || 0, "ether")}{" "}
+                          {
+                            getTokenDetails(QRReader?.tokenAddress || "")
+                              ?.ticker
+                          }
                         </span>
                       </h3>
                       <h3 className="flex flex-row gap-2 font-bold">
@@ -294,10 +311,10 @@ export default function Card() {
                           rel="noreferrer"
                           href={
                             "https://evm.ngd.network/address/" +
-                            data?.userAddress
+                            QRReader?.userAddress
                           }
                         >
-                          {Truncate(data?.userAddress, 16, "...")}
+                          {Truncate(QRReader?.userAddress, 16, "...")}
                         </Link>
                       </h3>
 
@@ -325,6 +342,7 @@ export default function Card() {
                       <button
                         className="bg-primary px-6 py-2 rounded-md shadow-md font-bold flex flex-row justify-center items-center gap-2"
                         onClick={() => Transfer()}
+                        disabled={approveLoading}
                       >
                         Transfer
                         <svg
@@ -382,17 +400,6 @@ export default function Card() {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="w-full text-sm" htmlFor="chains">
-                    Enter the amount
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-base"
-                    placeholder="Ex: 100"
-                    onChange={(e) => setAmount(e.currentTarget.valueAsNumber)}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="w-full text-sm" htmlFor="chains">
                     Select a Token
                   </label>
                   <select
@@ -409,6 +416,17 @@ export default function Card() {
                       );
                     })}
                   </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="w-full text-sm" htmlFor="chains">
+                    Enter the amount
+                  </label>
+                  <input
+                    type="number"
+                    className="w-full bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-base"
+                    placeholder="100"
+                    onChange={(e) => setAmount(e.currentTarget.valueAsNumber)}
+                  />
                 </div>
                 {isConnected ? (
                   <button
@@ -454,7 +472,7 @@ export default function Card() {
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="w-6 h-6"
+                      className="w-5 h-5"
                     >
                       <path
                         strokeLinecap="round"
@@ -464,11 +482,8 @@ export default function Card() {
                     </svg>
                     Download
                   </button>
-                  <button
-                    className=" bg-red-200 text-red-900 px-4 py-1 rounded-md shadow-md text-lg"
-                    onClick={() => setShowqr(false)}
-                  >
-                    Clear
+                  <button className="text-lg" onClick={() => setShowqr(false)}>
+                    Close
                   </button>
                 </div>
               </div>

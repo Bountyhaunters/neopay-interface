@@ -40,6 +40,7 @@ const _Tokens = Tokens.reverse();
 function getTokenDetails(address: string) {
   for (var i = 0; i < Tokens.length; i++) {
     if (Tokens[i].address === address) {
+      console.log(Tokens[i]);
       return Tokens[i];
     }
   }
