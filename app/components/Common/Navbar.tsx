@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function Navbar() {
   const [navbar, setNavbar] = useState(false);
 
-  const logo = process.env.NEXT_PUBLIC_BRAND_LOGO || "/neopay-logo.png";
+  const logo = "/neopay-logo.png" || "/neopay-logo.png";
 
   //navbar scroll changeBackground function
   const changeBackground = () => {
@@ -30,13 +30,13 @@ export default function Navbar() {
         <div
           className={
             navbar
-              ? "mx-6 md:mx-12 mt-4 py-2  text-white rounded-full bg-black/80 shadow-2xl"
-              : "mx-6 md:mx-12 mt-4 py-2 text-white rounded-full bg-black/60"
+              ? "mx-4 md:mx-12 mt-4 py-3  text-white rounded-full bg-black/80 shadow-2xl"
+              : "mx-4 md:mx-12 mt-4 py-3 text-white rounded-full bg-transparent"
           }
         >
-          <div className="flex flex-row items-center justify-between px-8 py-2">
+          <div className="flex flex-row items-center justify-between pl-6 pr-3 py-2">
             <Link href="/">
-              <img src={logo} alt="logo" height="150" width="150" />
+              <Image src={logo} alt="logo" height="150" width="150" />
             </Link>
             <ul className="flex-row items-center justify-center hidden space-x-12 text-lg uppercase md:flex">
               <li>
@@ -46,9 +46,13 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <div className="mx-6 md:mx-12 mt-4 py-4 px-6  text-white rounded-full bg-black/80 shadow-2xl flex flex-row gap-2 justify-between items-center md:hidden">
+      <div
+        className={
+          "mx-6 md:mx-12 mt-4 py-3 text-white rounded-full bg-transparent md:hidden flex justify-between items-center"
+        }
+      >
         <Link href="/">
-          <img src={logo} alt="logo" height="120" width="120" />
+          <Image src={logo} alt="logo" height="150" width="150" />
         </Link>
         <Connect />
       </div>
