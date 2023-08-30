@@ -49,8 +49,8 @@ export function Connect() {
   return (
     <>
       {isConnected ? (
-        <div className="px-4 md:px-8 py-2 rounded-full shadow-sm bg-white/20">
-          <div className="flex flex-row items-center justify-center gap-2 w-32 md:w-44">
+        <div className="px-6 md:px-8 py-2 rounded-full shadow-sm bg-white/20">
+          <div className="flex flex-row items-center justify-center gap-1 w-32 md:w-44">
             <Image
               src={"/neo-icon.png"}
               alt="ENS Avatar"
@@ -78,11 +78,19 @@ export function Connect() {
         <>
           {pathname === "/app" && (
             <button
-              className="px-4 text-sm md:text-base md:px-6 py-2 text-white rounded-full bg-primary"
+              className="px-4 text-base md:text-lg  md:px-6 py-2 text-white rounded-full bg-primary"
               onClick={() => setIsOpen(true)}
             >
               Connect Wallet
             </button>
+          )}
+          {pathname === "/" && (
+            <Link
+              className="px-4 text-base md:text-lg md:px-6 py-2 text-white rounded-full bg-primary"
+              href={"/app"}
+            >
+              Launch App
+            </Link>
           )}
         </>
       )}

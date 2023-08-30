@@ -140,7 +140,7 @@ export default function Card() {
       });
   }, [ref]);
   return (
-    <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-8 md:px-12 py-6">
+    <div className="flex flex-col justify-center items-center gap-4 max-w-lg bg-black/60 rounded-xl shadow-md w-full text-white px-6 md:px-12 py-6">
       <Tab.Group>
         <Tab.List className="grid grid-cols-2 w-full bg-black/50 rounded-lg p-1">
           <Tab as={Fragment}>
