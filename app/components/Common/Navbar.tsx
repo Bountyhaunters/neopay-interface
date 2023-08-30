@@ -34,6 +34,7 @@ export default function Navbar() {
               : "mx-6 md:mx-12 mt-4 py-2 text-white rounded-full bg-black/60"
           }
         >
+          {" "}
           <div className="flex flex-row items-center justify-between px-8 py-2">
             <Link href="/">
               <img src={logo} alt="logo" height="150" width="150" />
